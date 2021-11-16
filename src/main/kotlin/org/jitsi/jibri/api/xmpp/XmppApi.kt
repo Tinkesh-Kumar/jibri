@@ -19,6 +19,7 @@ package org.jitsi.jibri.api.xmpp
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.jitsi.jibri.CallUrlInfo
 import org.jitsi.jibri.FileRecordingRequestParams
 import org.jitsi.jibri.JibriBusyException
 import org.jitsi.jibri.JibriManager
@@ -182,7 +183,7 @@ class XmppApi(
      * send a new IQ with the subsequent stats after starting the service:
      * [JibriIq.Status.OFF] if there was an error starting the service (or an error while the service was running).
      *  In this case, a [JibriIq.FailureReason] will be set as well.
-     * [JibriIq.Status.ON] if the service started successfully
+     * [JibriIq.Status.ON] if the service started successfubaseUrllly
      */
     private fun handleStartJibriIq(
         startJibriIq: JibriIq,
@@ -287,15 +288,11 @@ class XmppApi(
             jacksonObjectMapper().readValue<AppData>(startIq.appData)
         }
         logger.info("XmppApi appData ${appData}")
+
         var baseUrl = if (appData?.baseUrl == null || appData.baseUrl.isEmpty())
             xmppEnvironment.baseUrl else appData.baseUrl
         logger.info("XmppApi baseUrl ${baseUrl}")
-        val callUrlInfo = getCallUrlInfoFromJid(
-            startIq.room,
-            xmppEnvironment.stripFromRoomDomain,
-            xmppEnvironment.xmppDomain,
-            baseUrl
-        )
+        val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "")
         val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
         val callParams = CallParams(callUrlInfo)
         logger.info("Parsed call url info: $callUrlInfo")

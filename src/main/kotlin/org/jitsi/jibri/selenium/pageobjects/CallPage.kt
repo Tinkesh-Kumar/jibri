@@ -109,7 +109,7 @@ class CallPage(driver: RemoteWebDriver) : AbstractPageObject(driver) {
 
     @Suppress("UNCHECKED_CAST")
     fun getBitrates(): Map<String, Any?> {
-        val stats = getStats()
+            val stats = getStats()
         return stats.getOrDefault("bitrate", mapOf<String, Any?>()) as Map<String, Any?>
     }
 
